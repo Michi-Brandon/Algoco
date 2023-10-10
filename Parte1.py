@@ -1,7 +1,7 @@
 # Abre el archivo .txt
 f = open("input.txt", "r")
 
-# Program
+# Programa
 while True:
     n = f.readline().strip()
 

@@ -18,13 +18,17 @@ def fuerza_bruta_recursiva(cajas):
     for i in range(len(cajas)):
         for j in range(3):  # Considera las 3 rotaciones posibles
             # Filtra las cajas que cumplen con las restricciones
-            cajas_validas = [caja for caja in cajas if cumple_restricciones(cajas[i], caja)]
+            cajas_validas = []
+            for caja in cajas:
+                if cumple_restricciones(cajas[i], caja):
+                    cajas_validas.append(caja)
             
             # Llamada recursiva para encontrar la altura máxima con las cajas restantes
             altura_actual = cajas[i][j] + fuerza_bruta_recursiva(cajas_validas)
             
             # Actualiza la altura máxima si es necesario
             altura_maxima = max(altura_maxima, altura_actual)
+        
     
     return altura_maxima
 

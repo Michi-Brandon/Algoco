@@ -2,6 +2,10 @@
 f = open("input.txt", "r")
 
 
+def cumple_restricciones(caja_base, caja_superior):
+    # Verifica que las dimensiones de la base sean estrictamente mayores que las de la caja superior
+    return caja_base[1]*caja_base[2] > caja_superior[1]*caja_superior[2]
+
 def fuerza_bruta_recursiva(cajas):
     # Caso base: si no hay cajas, la altura es 0
     if not cajas:
@@ -23,10 +27,6 @@ def fuerza_bruta_recursiva(cajas):
             altura_maxima = max(altura_maxima, altura_actual)
     
     return altura_maxima
-
-def cumple_restricciones(caja_base, caja_superior):
-    # Verifica que las dimensiones de la base sean estrictamente mayores que las de la caja superior
-    return caja_base[1] > caja_superior[1] and caja_base[2] > caja_superior[2]
 
 # Programa
 while True:

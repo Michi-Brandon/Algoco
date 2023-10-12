@@ -1,56 +1,64 @@
-# Abre el archivo .txt
-f = open("input.txt", "r")
+def generar_rotaciones(cajas):
+    from itertools import permutations
+    return [tuple(rotacion) for caja in cajas for rotacion in permutations(caja)]
 
+def fuerza_bruta_recursiva(cajas_permutadas, construccion_actual=None, indice_rotacion=0):
+    if construccion_actual is None:
+        construccion_actual = []
 
-def cumple_restricciones(caja_base, caja_superior):
-    # Verifica que las dimensiones de la base sean estrictamente mayores que las de la caja superior
-    return caja_base[1]*caja_base[2] > caja_superior[1]*caja_superior[2]
+    # Comprobamos si hemos alcanzado el final de las rotaciones
+    if indice_rotacion == len(cajas_permutadas):
+        # Si construccion_actual es None, retornamos 0; de lo contrario, retornamos la suma de alturas
+        return 0 if not construccion_actual else sum(caja[0] for caja in construccion_actual)
 
-def fuerza_bruta_recursiva(cajas):
-    # Caso base: si no hay cajas, la altura es 0
-    if not cajas:
-        return 0
-    
-    # Inicializar la altura máxima
-    altura_maxima = 0
-    
-    # Recorre todas las cajas y considera todas las rotaciones posibles
-    for i in range(len(cajas)):
-        for j in range(3):  # Considera las 3 rotaciones posibles
-            # Filtra las cajas que cumplen con las restricciones
-            cajas_validas = []
-            for caja in cajas:
-                if cumple_restricciones(cajas[i], caja):
-                    cajas_validas.append(caja)
-            
-            # Llamada recursiva para encontrar la altura máxima con las cajas restantes
-            altura_actual = cajas[i][j] + fuerza_bruta_recursiva(cajas_validas)
-            
-            # Actualiza la altura máxima si es necesario
-            altura_maxima = max(altura_maxima, altura_actual)
-        
-    
-    return altura_maxima
+    caja_rotada = cajas_permutadas[indice_rotacion]
+
+    # Comprobamos si la caja_rotada cumple con las restricciones
+    if not construccion_actual or (
+        caja_rotada[1] < construccion_actual[-1][1] and
+        caja_rotada[2] < construccion_actual[-1][2]
+    ):
+        # Agregamos la caja_rotada a la construcción actual
+        nueva_construccion = construccion_actual + [caja_rotada]
+
+        # Llamada recursiva y retorno directo sin necesidad de condición
+        return max(
+            fuerza_bruta_recursiva(cajas_permutadas, nueva_construccion, indice_rotacion + 1),
+            fuerza_bruta_recursiva(cajas_permutadas, construccion_actual, indice_rotacion + 1)
+        )
+
+    # Si la caja_rotada no cumple las restricciones, pasamos a la siguiente rotación
+    return fuerza_bruta_recursiva(cajas_permutadas, construccion_actual, indice_rotacion + 1)
+
 
 # Programa
+with open("input.txt", "r") as f:
+    lines = f.readlines()
+
+line_iterator = iter(lines)
+
 while True:
-    n = f.readline().strip()
+    try:
+        n_line = next(line_iterator).strip()
 
-    # Asegurarse que no sea linea vacia
-    if not n:
-      break
-    n = int(n)
-    if n == 0:
-        break  
-    print(n)
+        if not n_line:
+            break  # Fin del archivo
 
-    # Creamos un arreglo de las cajas
-    cajas = []
+        n = int(n_line)
 
-    # Leemos N lineas
-    for _ in range(n):
-        # Metemos las dimensiones de la caja i en el arreglo
-        dimensiones = list(map(int, f.readline().strip().split()))
-        cajas.append(dimensiones)
-    resultado = fuerza_bruta_recursiva(cajas)
-    print(resultado)
+        if n == 0:
+            break
+
+        # Resto del código para procesar las cajas
+        cajas = []
+
+        for _ in range(n):
+            dimensiones = list(map(int, next(line_iterator).strip().split()))
+            cajas.append(dimensiones)
+
+        cajas_permutadas = generar_rotaciones(cajas)
+        resultado = fuerza_bruta_recursiva(cajas_permutadas)
+        print(resultado)
+
+    except StopIteration:
+        break  # Fin del archivo
